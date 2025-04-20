@@ -1,0 +1,32 @@
+#!/bin/sh
+
+echo "🔍 Running PMD before pushing..."
+echo "============================================="
+
+# Run PMD and capture output
+echo "🚀 Running PMD..."
+PMD_OUTPUT=$(mvn pmd:check 2>&1)
+PMD_STATUS=$?
+
+# Extract PMD violations
+PMD_XML_PATH="target/pmd.xml"
+if [ -f "$PMD_XML_PATH" ]; then
+    echo "📄 Extracting PMD violations from $PMD_XML_PATH..."
+    PMD_ERRORS=$(xmllint --format "$PMD_XML_PATH" | grep -oP '(?<=<violation[^>]*>).*?(?=</violation>)')
+else
+    PMD_ERRORS="⚠️ PMD report not found. Check manually: $PMD_XML_PATH"
+fi
+
+# Print extracted violations
+if [ -n "$PMD_ERRORS" ]; then
+    echo "❌ PMD found issues:"
+    echo "---------------------------------------------"
+    echo "$PMD_ERRORS"
+    echo "---------------------------------------------"
+    echo "📄 Check full PMD report: $PMD_XML_PATH"
+    echo "❌ Pre-push rejected due to code issues detected by PMD."
+    exit 1
+fi
+
+echo "✅ No issues found. Pushing code..."
+exit 0
