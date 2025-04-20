@@ -1,4 +1,4 @@
-package com.masteryhub.e_commerce.dto;
+package com.masteryhub.e_commerce.dto.userDto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
