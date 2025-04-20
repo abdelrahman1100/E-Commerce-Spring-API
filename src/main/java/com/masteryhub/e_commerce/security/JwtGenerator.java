@@ -1,6 +1,7 @@
 package com.masteryhub.e_commerce.security;
 
 
+import com.masteryhub.e_commerce.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -22,9 +23,9 @@ public class JwtGenerator {
     this.signingKey = Keys.hmacShaKeyFor(keyBytes);
   }
 
-  public String generateToken(UserDetailsImpl userDetails) {
+  public String generateToken(User userDetails) {
     String email = userDetails.getEmail();
-    Integer versionToken = userDetails.get__v();
+    Integer versionToken = userDetails.getTokenVersion();
     Date currentDate = new Date();
     Date expireDate = new Date(currentDate.getTime() + securityConstants.getJwtExpiration());
 
