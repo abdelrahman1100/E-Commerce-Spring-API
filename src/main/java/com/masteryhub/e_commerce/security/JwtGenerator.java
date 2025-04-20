@@ -1,0 +1,61 @@
+package com.masteryhub.e_commerce.security;
+
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+
+@Component
+public class JwtGenerator {
+
+  private final SecurityConstants securityConstants;
+  private final SecretKey signingKey;
+
+  public JwtGenerator(SecurityConstants securityConstants) {
+    this.securityConstants = securityConstants;
+    byte[] keyBytes = Decoders.BASE64.decode(securityConstants.getSecretKey());
+    this.signingKey = Keys.hmacShaKeyFor(keyBytes);
+  }
+
+  public String generateToken(UserDetailsImpl userDetails) {
+    String email = userDetails.getEmail();
+    Integer versionToken = userDetails.get__v();
+    Date currentDate = new Date();
+    Date expireDate = new Date(currentDate.getTime() + securityConstants.getJwtExpiration());
+
+    return Jwts.builder()
+        .setSubject(email)
+        .claim("versionToken", versionToken)
+        .setIssuedAt(currentDate)
+        .setExpiration(expireDate)
+        .signWith(signingKey)
+        .compact();
+  }
+
+  public String getUsernameFromJWT(String token) {
+    Claims claims =
+        Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token).getBody();
+    return claims.getSubject();
+  }
+
+  public Integer getVersionToken(String token) {
+    Claims claims =
+        Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token).getBody();
+    return claims.get("versionToken", Integer.class);
+  }
+
+  public boolean validateToken(String token) {
+    try {
+      Claims claims =
+          Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token).getBody();
+      return !claims.getExpiration().before(new Date());
+    } catch (Exception ex) {
+      return false;
+    }
+  }
+}
