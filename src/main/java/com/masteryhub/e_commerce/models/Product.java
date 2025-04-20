@@ -1,5 +1,6 @@
 package com.masteryhub.e_commerce.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,7 @@ public class Product {
     private byte[] image;
 
     @ManyToOne
+    @JsonIgnore
     private Category category;
 }
 
