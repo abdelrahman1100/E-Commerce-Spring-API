@@ -1,7 +1,6 @@
-package com.masteryhub.e_commerce.controllers;
+package com.masteryhub.e_commerce.controllers.cartController;
 
 import com.masteryhub.e_commerce.dto.cartDto.CartProductDTO;
-import com.masteryhub.e_commerce.models.Product;
 import com.masteryhub.e_commerce.service.cartService.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cart")
-public class cartController {
+public class CartController {
 
     @Autowired
     private CartService cartService;
