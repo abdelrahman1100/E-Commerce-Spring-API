@@ -1,4 +1,4 @@
-package com.masteryhub.e_commerce.controllers;
+package com.masteryhub.e_commerce.controllers.categoryController;
 
 import com.masteryhub.e_commerce.models.Product;
 import com.masteryhub.e_commerce.service.categoryService.CategoryService;
