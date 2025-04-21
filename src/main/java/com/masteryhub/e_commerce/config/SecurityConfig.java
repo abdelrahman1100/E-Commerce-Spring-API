@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**","/v3/api-docs/**","/swagger-ui/**","/swagger-ui.html","/v3/api-docs.yaml").permitAll()
                         .requestMatchers("/products/all").permitAll()
                         .requestMatchers("/products/**").hasRole("ADMIN")
                         .requestMatchers("/auth/logout").authenticated()
