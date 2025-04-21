@@ -20,4 +20,9 @@ public class ProductController {
     public ResponseEntity<Product> CreateProduct(@ModelAttribute @Valid ProductDto productDto) {
         return productService.CreateProduct(productDto);
     }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
+        return productService.deleteProduct(id);
+    }
 }
