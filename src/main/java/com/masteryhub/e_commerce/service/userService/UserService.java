@@ -8,8 +8,11 @@ import com.masteryhub.e_commerce.repository.CartItemRepository;
 import com.masteryhub.e_commerce.repository.CartRepository;
 import com.masteryhub.e_commerce.repository.ProductRepository;
 import com.masteryhub.e_commerce.repository.UserRepository;
+import com.masteryhub.e_commerce.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,6 +36,13 @@ public class UserService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        if (!user.getId().equals(userDetails.getId())) {
+            return ResponseEntity.badRequest().body("Not authorized to add");
+        }
 
         Cart cart = user.getCart();
         if (cart == null) {
@@ -63,4 +73,38 @@ public class UserService {
             return ResponseEntity.ok("Product added to cart");
         }
     }
+
+    public ResponseEntity<String> removeProductFromUserCart(Long productId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        System.out.println(userId);
+        System.out.println(userDetails.getId());
+
+        if (!user.getId().equals(userDetails.getId())) {
+            return ResponseEntity.badRequest().body("Not authorized to remove");
+        }
+
+        Cart cart = user.getCart();
+        if (cart == null || cart.getItems() == null || cart.getItems().isEmpty()) {
+            throw new IllegalArgumentException("Cart is empty or not found.");
+        }
+
+        CartItem itemToRemove = cart.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst()
+                .orElse(null);
+
+        if (itemToRemove == null) {
+            throw new IllegalArgumentException("Product not found in cart.");
+        }
+
+        cartItemRepository.delete(itemToRemove);
+
+        return ResponseEntity.ok("Product removed from cart");
+    }
+
 }
