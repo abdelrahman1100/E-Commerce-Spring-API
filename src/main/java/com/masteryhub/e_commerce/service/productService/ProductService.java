@@ -38,7 +38,6 @@ public class ProductService {
 
         MultipartFile file = productDto.getImage();
 
-        // Validate the image (e.g., check if the file is an image and its size)
         if (file != null && !file.isEmpty()) {
             try {
                 if (!file.getContentType().startsWith("image")) {
