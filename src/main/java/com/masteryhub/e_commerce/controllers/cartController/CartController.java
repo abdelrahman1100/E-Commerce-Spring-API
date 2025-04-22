@@ -18,8 +18,8 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<CartProductDTO>> ViewCart(@PathVariable Long userId) {
-        return cartService.ViewCart(userId);
+    @GetMapping
+    public ResponseEntity<List<CartProductDTO>> ViewCart() {
+        return cartService.ViewCart();
     }
 }

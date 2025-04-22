@@ -30,19 +30,15 @@ public class UserService {
     @Autowired
     private CartItemRepository cartItemRepository;
 
-    public ResponseEntity<String> addProductToUserCart(Long productId, Long userId) {
+    public ResponseEntity<String> addProductToUserCart(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + productId));
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        if (!user.getId().equals(userDetails.getId())) {
-            return ResponseEntity.badRequest().body("Not authorized to add");
-        }
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userDetails.getId()));
 
         Cart cart = user.getCart();
         if (cart == null) {
@@ -74,19 +70,13 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<String> removeProductFromUserCart(Long productId, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+    public ResponseEntity<String> removeProductFromUserCart(Long productId) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        System.out.println(userId);
-        System.out.println(userDetails.getId());
-
-        if (!user.getId().equals(userDetails.getId())) {
-            return ResponseEntity.badRequest().body("Not authorized to remove");
-        }
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userDetails.getId()));
 
         Cart cart = user.getCart();
         if (cart == null || cart.getItems() == null || cart.getItems().isEmpty()) {

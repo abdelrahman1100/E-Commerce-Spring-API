@@ -19,17 +19,13 @@ public class CartService {
     @Autowired
     private CartRepository cartRepository;
 
-    public ResponseEntity<List<CartProductDTO>> ViewCart(Long userId) {
+    public ResponseEntity<List<CartProductDTO>> ViewCart() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        if (!userId.equals(userDetails.getId())) {
-            return ResponseEntity.badRequest().body(null);
-        }
-
-        Cart cart = cartRepository.findByUserId(userId);
+        Cart cart = cartRepository.findByUserId(userDetails.getId());
 
         if (cart == null || cart.getItems().isEmpty()) {
             return ResponseEntity.noContent().build();

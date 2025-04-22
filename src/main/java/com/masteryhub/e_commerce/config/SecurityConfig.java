@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -28,13 +30,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http
+                .cors(withDefaults())
+                .csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**","/v3/api-docs/**","/swagger-ui/**","/swagger-ui.html","/v3/api-docs.yaml").permitAll()
-                        .requestMatchers("/products/all").permitAll()
-                        .requestMatchers("/products/**").hasRole("ADMIN")
+                        .requestMatchers("/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs.yaml").permitAll()
+                        .requestMatchers("/products/all").authenticated()
+                        .requestMatchers("/products").hasRole("ADMIN")
+                        .requestMatchers("/products/{id}").hasRole("ADMIN")
                         .requestMatchers("/auth/logout").authenticated()
                         .anyRequest().authenticated()
                 )

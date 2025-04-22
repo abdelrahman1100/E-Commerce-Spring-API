@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("user")
 public class UserController {
@@ -12,14 +13,14 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/{userId}/product/{productId}")
-    public ResponseEntity<String> addProduct(@PathVariable Long productId, @PathVariable Long userId) {
-        return userService.addProductToUserCart(productId, userId);
+    @PostMapping("/product/{productId}")
+    public ResponseEntity<String> addProduct(@PathVariable Long productId) {
+        return userService.addProductToUserCart(productId);
     }
 
-    @DeleteMapping("/{userId}/product/{productId}")
-    public ResponseEntity<String> removeProductFromCart(@PathVariable Long userId, @PathVariable Long productId) {
-        return userService.removeProductFromUserCart(productId, userId);
+    @DeleteMapping("/product/{productId}")
+    public ResponseEntity<String> removeProductFromCart(@PathVariable Long productId) {
+        return userService.removeProductFromUserCart(productId);
     }
 
 }
